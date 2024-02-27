@@ -1,0 +1,55 @@
+#
+# Copyright (C) 2023 Intel Corporation.
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+
+ ## Current Developer Toolbox doesn't support environment files, make sure to remove any files or environment variables starting with $
+version: '3.7'
+services:
+  camera-simulator:
+    container_name: camera-simulator
+    image: aler9/rtsp-simple-server
+    ports:
+      - "127.0.0.1:8554:8554"
+  camera-simulator1:
+    build:
+      context: .
+    image: jrottenberg/ffmpeg:4.4-alpine
+    container_name: camera-simulator1
+    network_mode: "host"
+    entrypoint: ffmpeg
+    command: "
+        -nostdin
+        -re -stream_loop -1
+        -i /home/pipeline-server/sample-media/example.mp4
+        -c copy
+        -f rtsp
+        -rtsp_transport
+        tcp
+        rtsp://localhost:8554/camera_1
+        "
+    depends_on:
+      - camera-simulator
+    volumes:
+      - ./sample-media:/home/pipeline-server/sample-media
+  CheckoutApp:
+    image: checkout:dev
+    build:
+      context: .
+    container_name: checkout0
+    network_mode: "host"
+    restart: always
+    entrypoint: python
+    command: 
+      - '/app/main.py'
+      - 'rtsp://localhost:8554/camera_1'
+    volumes:
+      - ./model:/app/models
+      - ~/.Xauthority:/home/dlstreamer/.Xauthority
+      - /tmp/.X11-unix
+    environment:
+      - DISPLAY=host.docker.internal:0
+    depends_on:
+      - camera-simulator1

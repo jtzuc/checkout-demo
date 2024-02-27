@@ -1,0 +1,6 @@
+openvino-dev==2023.0.0
+nncf==2.5.0
+lap==0.4.0
+ultralytics==8.0.117
+onnx==1.14.0
+supervision==0.16.0
