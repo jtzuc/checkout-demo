@@ -109,10 +109,8 @@ def main():
     if not ov_model_path.exists():
         # export model to OpenVINO format
         out_dir = det_model.export(format="openvino", dynamic=False, half=True)
-
-    model = YOLO('model/yolov8m_openvino_model/', task='detect')
-
-    print(f"predictor: {model.predictor}, config: {model.cfg}")
+    ov_dir = ov_model_path.parent
+    model = YOLO(ov_dir.absolute().as_posix(), task='detect')
 
     #Load in our sample video
     VID_PATH = args.source
@@ -223,6 +221,9 @@ def main():
         
         draw_text(frame, "Receipt: " + str(purchased_items), point=(50, 800), color=(30, 144, 255))
         cv2.imshow("display", frame)
+        if cv2.waitKey(1) == ord('q'):
+            break
+    cv2.destroyAllWindows()
 
 if __name__ == "__main__":
     main()
