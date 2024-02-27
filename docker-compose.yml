@@ -14,14 +14,13 @@ services:
     ports:
       - "127.0.0.1:8554:8554"
   camera-simulator1:
-    build:
-      context: .
     image: jrottenberg/ffmpeg:4.4-alpine
     container_name: camera-simulator1
     network_mode: "host"
     entrypoint: ffmpeg
     command: "
         -nostdin
+        -hide_banner
         -re -stream_loop -1
         -i /home/pipeline-server/sample-media/example.mp4
         -c copy
@@ -34,21 +33,41 @@ services:
       - camera-simulator
     volumes:
       - ./sample-media:/home/pipeline-server/sample-media
-  CheckoutApp:
+  # webcam:
+  #   image: jrottenberg/ffmpeg:4.4-alpine
+  #   container_name: camera-simulator2
+  #   network_mode: "host"
+  #   entrypoint: ffmpeg
+  #   command: "
+  #       -nostdin
+  #       -hide_banner
+  #       -f avfoundation
+  #       -framerate 10
+  #       -pixel_format yuyv422
+  #       -i 0
+  #       -c copy
+  #       -f rtsp
+  #       -rtsp_transport
+  #       tcp
+  #       rtsp://localhost:8554/camera_2
+  #       "
+  #   depends_on:
+  #     - camera-simulator
+  checkout-app:
     image: checkout:dev
     build:
       context: .
     container_name: checkout0
     network_mode: "host"
-    restart: always
     entrypoint: python
     command: 
       - '/app/main.py'
       - 'rtsp://localhost:8554/camera_1'
     volumes:
-      - ./model:/app/models
+      - ./model:/app/model
       - ~/.Xauthority:/home/dlstreamer/.Xauthority
       - /tmp/.X11-unix
+      - ./main.py:/app/main.py
     environment:
       - DISPLAY=host.docker.internal:0
     depends_on:
