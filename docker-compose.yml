@@ -22,7 +22,7 @@ services:
         -nostdin
         -hide_banner
         -re -stream_loop -1
-        -i /home/pipeline-server/sample-media/example.mp4
+        -i /home/pipeline-server/sample-media/example_fhd.mp4
         -c copy
         -f rtsp
         -rtsp_transport
@@ -68,6 +68,7 @@ services:
       - ~/.Xauthority:/home/dlstreamer/.Xauthority
       - /tmp/.X11-unix
       - ./main.py:/app/main.py
+      - ./zones_fhd.json:/app/zones.json
     environment:
       - DISPLAY=host.docker.internal:0
     depends_on:

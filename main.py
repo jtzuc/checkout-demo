@@ -38,7 +38,7 @@ def draw_text(image, text, point, color=(255, 255, 255)) -> None:
     """
     _, f_width = image.shape[:2]
     
-    text_size, _ = cv2.getTextSize(text, fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=2, thickness=2)
+    text_size, _ = cv2.getTextSize(text, fontFace=cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.5, thickness=2)
 
     rect_width = text_size[0] + 20
     rect_height = text_size[1] + 20
@@ -100,7 +100,7 @@ def main():
     models_dir = Path('./model')
     models_dir.mkdir(exist_ok=True)
 
-    DET_MODEL_NAME = "yolov8n"
+    DET_MODEL_NAME = "yolov8m"
     det_model = YOLO(models_dir / f'{DET_MODEL_NAME}.pt', task='detect')
     label_map = det_model.model.names
 
@@ -121,7 +121,7 @@ def main():
     zone = sv.PolygonZone(polygon=polygon, frame_resolution_wh=video_info.resolution_wh)
 
     box_annotator = sv.BoxAnnotator(thickness=4, text_thickness=4, text_scale=2)
-    zone_annotator = sv.PolygonZoneAnnotator(zone=zone, color=sv.Color.white(), thickness=6, text_thickness=6, text_scale=4)
+    zone_annotator = sv.PolygonZoneAnnotator(zone=zone, color=sv.Color.green(), thickness=6, text_thickness=6, text_scale=4)
     #Define empty lists to keep track of labels
     original_labels = []
     final_labels = []
